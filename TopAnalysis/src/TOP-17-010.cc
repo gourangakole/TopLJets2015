@@ -462,6 +462,7 @@ void TOP17010::runAnalysis()
       }
 
       ht_->fill("cosThStar", costhetastar,wgt , twe.cat);  
+      
 
       fillControlHistograms(twe,wgt);
 
@@ -659,8 +660,51 @@ void TOP17010::runAnalysis()
           TopWidthEvent itwe(ileptons,ijets);
           icat=itwe.cat;
           lbPairs=itwe.getPairs();
+	  // make comment out again
+	  if(lbPairs.size() > 0){
+	    //cout << "lbPairs[0].leptonId():  " << lbPairs[0].leptonId() <<endl;
+	    for(auto l : ileptons) {
+	      //cout << "ileptons.originalReference() && l.Pt() : " << l.originalReference() <<" && "<< l.Px() << " && " << l.Py() << " && " << l.Pz() << " && " << l.E() << endl;
+	      cout << "ilepton details : " << l.Px() << " && " << l.Py() << " && " << l.Pz() << " && " << l.E() << endl;
+	    }
+	    for(auto ijet : ijets) {
+	      cout << "ijet details: " << ijet.Px() << " && " << ijet.Py() << " && " << ijet.Pz() << " && " << ijet.E() << endl;
+	    }
+	  }
+	  // make comment out again
         }
-
+	
+	// just test on 19Nov2019
+	//std::vector<LeptonBJetPair> lbPairss=twe.getPairs();
+	if(reSelect){
+	  if(lbPairs.size()>=1){
+	    //cout << "inside the loop: " << endl;
+	    //      int r = lbPairs[0].leptonId();
+	    TLorentzVector ll= ileptons[lbPairs[0].leptonId()].p4();
+	    cout << "lepton from pair: " << ll.Px() << " && " << ll.Py() << " && " << ll.Pz() << " && " << ll.E() << endl;
+	    TLorentzVector bb;
+	    TVector3 boost;
+	    for(auto it = lbPairs.begin(); it != lbPairs.end(); ++it){
+	      if(it == lbPairs.begin()){ // first element
+		//cout << "pair0's details: " << it->Px() << endl;
+		boost=it->BoostVector()*(-1);
+		cout << "bjet from pair: " << it->Px() - ll.Px() << endl;
+		bb.SetPxPyPzE(it->Px() - ll.Px(),it->Py() - ll.Py(),it->Pz() - ll.Pz(),it->E() - ll.E());
+	      }
+	    }
+	    /*
+	    for(auto pair0 : lbPairs){
+	      cout << "pair0's details: " << pair0[0].Px() << endl;
+	    }
+	    */
+	    ll.Boost(boost);
+	    bb.Boost(boost);
+	    Float_t costhetaStar = ll.Vect().Dot(bb.Vect()) / (ll.Vect().Mag()*bb.Vect().Mag());
+	    //cout<<"costhetastar for sreetapa="<<costhetaStar<<endl;
+	  }
+	}
+	
+	
         //fill with new values/weights
         std::vector<double> eweights(1,iwgt);
 

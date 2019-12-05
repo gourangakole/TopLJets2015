@@ -283,13 +283,15 @@ float cosThetaStar (MiniEvent_t &ev, vector<Particle> genleptons, vector<Particl
   else if ( option == "right") { fR = 1; }
   */
   for(Int_t igen=0; igen<ev.ngtop; igen++) {
+    cout << "igen: " << igen << endl;
+    cout << "ev.gtop_id[igen]: " << ev.gtop_id[igen] << endl;
     if(abs(ev.gtop_id[igen])!=6) continue;
     TLorentzVector gentop;
     gentop.SetPtEtaPhiM( ev.gtop_pt[igen], ev.gtop_eta[igen], ev.gtop_phi[igen], ev.gtop_m[igen] );
-    //    cout << "onegentop " << endl;
+    cout << "onegentop " << endl;
     int genb_count = 0 ;
     for ( auto& genb : genbs) {
-      //    cout << "onegenb ";
+      cout << "onegenb ";
       if ( genb_count > 1 ) break;
       genb_count ++;
       for ( auto& genw : genwbosons ) {
@@ -299,12 +301,15 @@ float cosThetaStar (MiniEvent_t &ev, vector<Particle> genleptons, vector<Particl
 	  int genb_id = genb.id();
 	  int genl_id = genl.id();
 	  int genw_id = genw.id();
-	  if ( ev.gtop_id[igen]*genb_id <0 ) continue;
+	  cout << "(before sel) top_id:  " << ev.gtop_id[igen] << " & genb_id: " << genb_id << endl;
+	  if ( ev.gtop_id[igen]*genb_id > 0 ) continue;
 	  //        cout << "topid*bid >0 " ;
+	  //	  cout << "genw_id*genl_id (before sel): " << genw_id*genl_id << endl;
 	  if ( genw_id*genl_id > 0) continue;
 	  //        cout << "wid*lid <0 ";
-	  if ( genb_id*genl_id > 0) continue;  // lep and b oppo.
+	  if ( genb_id*genl_id < 0) continue;  // lep and b oppo.
 	  //        cout << "bid*lid <0 ";
+	  cout << "top_id: " << ev.gtop_id[igen] << " & genb_id: " << genb_id << " & genw_id: " << genw_id << " & genl_id: " << genl_id << endl; 
 	  TLorentzVector l_wrf= genl.p4();
 	  TLorentzVector b_trf= genb.p4();
 	  TVector3 wrf_boost=genw.BoostVector()*(-1);
